@@ -1,0 +1,744 @@
+---
+title: "SAGE promoter analysis"
+output: html_document
+---
+###############################################################################
+ Code written by Joshua Elmore (joshua.elmore@pnnl.gov) for SAGE: Serine      #
+ recombinase-assisted genome engineering manuscript                           #
+ Note, this  worksheet is for processing non-log scale values.                #
+###############################################################################
+
+Below are the input variables for the function used to generate plots for
+individual organisms and a summary of promoter stats for each organism.
+
+##Const_promoter_stats_indiv_org <- function( Input_file_label,
+##                                            Output_file_label,
+##                                            num_cond,
+##                                            num_bc_rep,
+##                                            num_exp_rep,
+##                                            UTR_cutoff
+##                                            Cond_cutoff
+##                                          )
+
+Input_file_label is the label infront of the generic R input file name:
+e.g. CGA009 in 
+"CGA009_promoter_full_dataframe_NGS_cutoff5_3MAD_min3reps_for_R.csv"
+
+Output_file_label defines the folder name used and file name generated
+for printed charts (e.g. Rpal for R. palustris CGA009 data)
+
+num_cond is the number of conditions tested in the experiment
+defaults to 3 if not defined below
+
+num_bc_reps is the number of barcodes per promoter used in the experiment
+defaults to 5 if not defined below
+
+num_exp_reps is the number of experimental replicates performed (e.g. 
+number of cultures harvested and processed for each strain/condition)
+defaults to 4 if not defined below
+
+UTR_cut is the value used for the maximum fold-difference between barcodes 
+within a promoter that will be used to classify a promoter UTR sensitive.
+This defaults to 3 if not defined below
+
+Cond_cut is the value used for the maximum fold-difference between conditions 
+within a promoter that will be used to classify a promoter condition 
+sensitive.
+This defaults to 4 if not defined below
+
+## Code chunk that loads the source files for each function.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("Const_prom_stats_ind_org.R")
+source("Const_prom_stats_ind_org_median.R")
+source("Const_prom_stats_ind_org_no_charts.R")
+source("Const_prom_stats_org_comp_data.R")
+source("generate_org_compare_charts-set1.R")
+source("summarySE_median.R")
+
+## Use these to define values used for UTR_cut and Cond_cut. If unused, the
+## functions below will use 3 and 4 for these variables respectively.
+UTR_cutoff = 3.5
+Cond_cutoff = 4
+
+```
+
+## Code chunk that generates plots for each organism using mean promoter 
+## strength for calculation, and generates a csv that contains several 
+## general promoter stats for each organism
+
+```{r individual_organism_plots, include=FALSE}
+## Initialize an empty dataframe for the promoter analysis overview
+promoter_analysis_overview <- data.frame(matrix(ncol = 13, nrow = 0))
+## add column names to the dataframe
+column_names <- c("Organism",
+                  "num_bc_pass",
+                  "num_prom_in_bc_pass",
+                  "num_prom_suff_data",
+                  "num_bc_pass_outlier",
+                  "num_UTR_insensitive",
+                  "num_Cond_insensitive",
+                  "num_consistent",
+                  "UTR_cutoff",
+                  "Cond_cutoff",
+                  "expression_range",
+                  "Problematic_percent",
+                  "Number_of_promoters_w_prob_bc"
+                  )
+
+## Generate a dataframe with a broad overview of stats from the promoter
+## analysis. This dataframe is for the stats when using the default UTR and
+## Condition insensitivity cutoffs of 3.5 and 4 respectively.
+promoter_analysis_overview <- rbind(promoter_analysis_overview,
+                                    Const_promoter_stats_indiv_org("RHA1",
+                                                                   "Rjostii",
+                                                                   3,
+                                                                   5,
+                                                                   4,
+                                                                   UTR_cutoff,
+                                                                   Cond_cutoff)
+                                    )
+promoter_analysis_overview <- rbind(promoter_analysis_overview, 
+                                    Const_promoter_stats_indiv_org("Pflu",
+                                                                   "Pflu",
+                                                                   4,
+                                                                   5,
+                                                                   4,
+                                                                   UTR_cutoff,
+                                                                   Cond_cutoff)
+                                    )
+promoter_analysis_overview <- rbind(promoter_analysis_overview, 
+                                    Const_promoter_stats_indiv_org("TBS10",
+                                                                   "Pbr",
+                                                                   3,
+                                                                   5,
+                                                                   4,
+                                                                   UTR_cutoff,
+                                                                   Cond_cutoff)
+                                    )
+promoter_analysis_overview <- rbind(promoter_analysis_overview, 
+                                    Const_promoter_stats_indiv_org("Gpo1",
+                                                                   "Ppu",
+                                                                   3,
+                                                                   5,
+                                                                   4,
+                                                                   UTR_cutoff,
+                                                                   Cond_cutoff)
+                                    )
+promoter_analysis_overview <- rbind(promoter_analysis_overview, 
+                                    Const_promoter_stats_indiv_org("CGA009",
+                                                                   "Rpal",
+                                                                   2,
+                                                                   5,
+                                                                   4,
+                                                                   UTR_cutoff,
+                                                                   Cond_cutoff)
+                                    )
+write_csv(promoter_analysis_overview,
+          "./Promoter_stats/promoter_analysis_overview.csv")
+
+```
+
+## Code chunk that generates plots for each organism using median promoter 
+## strength for calculation, and generates a csv that contains several 
+## general promoter stats for each organism
+
+```{r individual_organism_plots, include=FALSE}
+## Initialize an empty dataframe for the promoter analysis overview
+promoter_analysis_overview <- data.frame(matrix(ncol = 13, nrow = 0))
+## add column names to the dataframe
+column_names <- c("Organism",
+                  "num_bc_pass",
+                  "num_prom_in_bc_pass",
+                  "num_prom_suff_data",
+                  "num_bc_pass_outlier",
+                  "num_UTR_insensitive",
+                  "num_Cond_insensitive",
+                  "num_consistent",
+                  "UTR_cutoff",
+                  "Cond_cutoff",
+                  "expression_range",
+                  "Problematic_percent"
+                  )
+
+## Generate a dataframe with a broad overview of stats from the promoter
+## analysis. This dataframe is for the stats when using the default UTR and
+## Condition insensitivity cutoffs of 3.5 and 4 respectively.
+promoter_analysis_overview <- 
+  rbind(promoter_analysis_overview,
+        Const_promoter_stats_indiv_org_median("RHA1",
+                                       "Rjostii",
+                                       3,
+                                       5,
+                                       4,
+                                       UTR_cutoff,
+                                       Cond_cutoff)
+                                    )
+promoter_analysis_overview <- 
+  rbind(promoter_analysis_overview, 
+        Const_promoter_stats_indiv_org_median("Pflu",
+                                       "Pflu",
+                                       4,
+                                       5,
+                                       4,
+                                       UTR_cutoff,
+                                       Cond_cutoff)
+                                    )
+promoter_analysis_overview <- 
+  rbind(promoter_analysis_overview, 
+        Const_promoter_stats_indiv_org_median("TBS10",
+                                       "Pbr",
+                                       3,
+                                       5,
+                                       4,
+                                       UTR_cutoff,
+                                       Cond_cutoff)
+                                    )
+promoter_analysis_overview <- 
+  rbind(promoter_analysis_overview, 
+        Const_promoter_stats_indiv_org_median("Gpo1",
+                                       "Ppu",
+                                       3,
+                                       5,
+                                       4,
+                                       UTR_cutoff,
+                                       Cond_cutoff)
+                                    )
+promoter_analysis_overview <- 
+  rbind(promoter_analysis_overview, 
+        Const_promoter_stats_indiv_org_median("CGA009",
+                                       "Rpal",
+                                       2,
+                                       5,
+                                       4,
+                                       UTR_cutoff,
+                                       Cond_cutoff)
+                                    )
+write_csv(promoter_analysis_overview,
+          "./Promoter_stats/promoter_analysis_overview_median.csv")
+
+```
+
+## Code chunk that generates csv's that contain all of the same promoter stats
+## as generated above, but they do so for each organism using an array of
+## inputed cutoffs, rather than just a single one as above.
+
+```{r parameter_sweep, include = FALSE}
+################################################################################
+## Sweep of possible stats if different sensitivity cutoffs were used.        ##
+## Runs nearly identical function as above, but this function does not        ##
+## generate and write chart files.                                            ##
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
+
+## Running parameter sweep for Rhodococcus jostii RHA1
+UTR_parameters <- c(2,2.5,3,3.5,4,5,6,7,8,10)
+Cond_parameters <- c(2,2.5,3,3.5,4,5,6,7,8,10) 
+
+parameter_sweep_RHA1 <- data.frame(matrix(ncol = 13, nrow = 0))
+colnames(parameter_sweep_RHA1) <- column_names
+
+  for(valU in UTR_parameters){
+    for(valC in Cond_parameters){
+      parameter_sweep_RHA1 <-rbind(parameter_sweep_RHA1, 
+                              Const_prom_stats_ind_org_no_charts(
+                                "RHA1",
+                                "Rjostii",
+                                3,
+                                5,
+                                4,
+                                valU,
+                                valC)
+                              )
+      
+    }
+  }
+write_csv(parameter_sweep_RHA1,
+          "./Promoter_stats/parameter sweep RHA1.csv")
+
+## Running parameter sweep for Pseudomonas fluorescens SBW25
+parameter_sweep_SBW25 <- data.frame(matrix(ncol = 13, nrow = 0))
+colnames(parameter_sweep_SBW25) <- column_names
+
+  for(valU in UTR_parameters){
+    for(valC in Cond_parameters){
+      parameter_sweep_SBW25 <-rbind(parameter_sweep_SBW25, 
+                              Const_prom_stats_ind_org_no_charts(
+                                "Pflu",
+                                "Pflu",
+                                4,
+                                5,
+                                4,
+                                valU,
+                                valC)
+      )
+      
+    }
+  }
+write_csv(parameter_sweep_SBW25,
+          "./Promoter_stats/parameter sweep SBW25.csv")
+
+## Running parameter sweep for Pseudomonas putida Gpo1
+parameter_sweep_Gpo1 <- data.frame(matrix(ncol = 13, nrow = 0))
+colnames(parameter_sweep_Gpo1) <- column_names
+
+for(valU in UTR_parameters){
+  for(valC in Cond_parameters){
+    parameter_sweep_Gpo1 <-rbind(parameter_sweep_Gpo1, 
+                            Const_prom_stats_ind_org_no_charts(
+                              "Gpo1",
+                              "Ppu",
+                              3,
+                              5,
+                              4,
+                              valU,
+                              valC)
+    )
+    
+  }
+}
+write_csv(parameter_sweep_Gpo1,
+          "./Promoter_stats/parameter sweep Gpo1.csv")
+
+## Running parameter sweep for Pseudomonas brassicacaerum TBS10
+parameter_sweep_TBS10 <- data.frame(matrix(ncol = 13, nrow = 0))
+colnames(parameter_sweep_TBS10) <- column_names
+
+for(valU in UTR_parameters){
+  for(valC in Cond_parameters){
+    parameter_sweep_TBS10 <-rbind(parameter_sweep_TBS10, 
+                            Const_prom_stats_ind_org_no_charts(
+                              "TBS10",
+                              "Pbr",
+                              3,
+                              5,
+                              4,
+                              valU,
+                              valC)
+    )
+    
+  }
+}
+write_csv(parameter_sweep_TBS10,
+          "./Promoter_stats/parameter sweep TBS10.csv")
+
+
+## Running parameter sweep for Rhodopseudomonas palustris CGA009
+parameter_sweep_CGA009 <- data.frame(matrix(ncol = 13, nrow = 0))
+colnames(parameter_sweep_CGA009) <- column_names
+
+for(valU in UTR_parameters){
+  for(valC in Cond_parameters){
+    parameter_sweep_CGA009 <-rbind(parameter_sweep_CGA009, 
+                            Const_prom_stats_ind_org_no_charts(
+                              "CGA009",
+                              "Rpal",
+                              2,
+                              5,
+                              4,
+                              valU,
+                              valC)
+    )
+    
+  }
+}
+write_csv(parameter_sweep_CGA009,
+          "./Promoter_stats/parameter sweep CGA009.csv")
+
+```
+
+## Code chunk that generates the dataframes needed to perform comparisons
+## between strains.
+
+## Below are the names and descriptions of the variables in the 
+## all_stats_organisms.csv generated by the below code chunk
+## each line in the document is for a specific barcode replicate in a given 
+## physical sample (e.g. shake for replicate for different conditions, organism,
+## etc.)
+                Name =                 Name of promoter
+                Replicate =            Barcode replicate number (values 1-5)
+                UTR_sensitive =        Does the promoter have a 5'UTR senstivity
+                UTR_max_min_ratio =    What is the ratio between the strongest 
+                                       and weakest barcode variant for the 
+                                       promoter
+                Cond_sensitive =       Does the promoter display condition 
+                                       sensitivity
+                Cond_max_min_ratio =   What is the ratio between the conditions 
+                                       displaying the strongest and weakest 
+                                       expression level
+                Overall_PS =           Mean RTA when all filtered 
+                                       promoter strength values are averaged. 
+                                       This filters out data points for barcodes 
+                                       that either lack sufficient data for 
+                                       analysis or are outliers. Unlike 
+                                       Overall_PS_BC, no averaging is performed 
+                                       as an intermediate step.
+                Barcode =              barcode sequence for data point
+                bc_outlier =           is this barcode an outlier? If so, this 
+                                       data point was not used to calculate the 
+                                       Overall_PS or Overall_PS_BC values 
+                N_promoter_samples =   Number of data points for a given 
+                                       promoter in the indcated organism
+                N_barcode_samples =    Number of samples for the given barcode
+                                       in the indicated organism
+                Name_and_bc_rep =      Naming scheme that includes the promoter 
+                                       name and barcode replicate # (values 1-5)
+                Condition =            Condition tested
+                Condition_replicate=   Replicate shake flask # (values 1-4)
+                Promoter_Strength =    RTA value for the given sample.
+                Sequence =             Promoter / barcode sequence
+                consistent =           Label for is the promoter activity is 
+                                       considered consistent in the given 
+                                       organism. For this, the 
+                                       Cond_min_max_ratio must be lower than the
+                                       defined threshold (default 4) and 
+                                       UTR_min_max_ratio lower than its defined 
+                                       threshold (default 3.5) in the given 
+                                       organism
+                organism =             organism from which the data point was 
+                                       derived
+                BC_Promoter_Strength = mean RTA across conditions for the 
+                                       indicated promoter barcode variant in the
+                                       given organism
+                Overall_PS_BC =        Same as Overall_PS, except it uses the 
+                                       averages of BC_promoter_strength values 
+                                       for non-outlier barcode variants to 
+                                       determine the Overall RTA value. This 
+                                       eliminates some barcode variants from 
+                                       having more weight in the mean/medians 
+                                       than others. Basically, if one barcode 
+                                       has 12 data points and another has 16, 
+                                       the latter will have a stronger influence 
+                                       in the Overall_PS value, but not for this 
+                                       value.
+
+```{r generate_data_needed_for_strain_comparison, include = FALSE}
+## Initialize an empty dataframe for the promoter comparison between organisms
+organism_comparison <- data.frame(matrix(ncol = 20, nrow = 0))
+column_names <- c("Name",
+                  "Replicate",
+                  "UTR_sensitive",
+                  "UTR_max_min_ratio",
+                  "Cond_sensitive",
+                  "Cond_max_min_ratio",
+                  "Overall_PS",
+                  "Barcode",
+                  "bc_outlier",
+                  "N_promoter_samples",
+                  "N_barcode_samples",
+                  "Name_and_bc_rep",
+                  "Condition",
+                  "Condition_replicate",
+                  "Promoter_Strength",
+                  "Sequence",
+                  "consistent",
+                  "organism",
+                  "BC_Promoter_Strength",
+                  "Overall_PS_BC"
+                  )
+colnames(organism_comparison) <- column_names
+
+## Note, select the organism that has the most barcodes represented in its 
+## non-barcode outlier data to be the first here. It will come in handy later.
+## This data can be found in the output of an above chunk of code (the file:
+## "promoter_analysis_overview.csv"). There is likely a way to populate these 
+##  in order by factoring the data in that table by the variable in question, 
+## and then using it to generate a for loop that runs eaech of the following 
+## functions. However, this code will rely on manual rearrangement.
+
+organism_comparison <- rbind(organism_comparison, 
+                                    Const_prom_stats_org_comp_data("TBS10",
+                                                                   "Pbr",
+                                                                   3,
+                                                                   5,
+                                                                   4)
+                                    )
+organism_comparison <- rbind(organism_comparison,
+                                   Const_prom_stats_org_comp_data("RHA1",
+                                                                   "Rjostii",
+                                                                   3,
+                                                                   5,
+                                                                   4)
+                                    )
+organism_comparison <- rbind(organism_comparison, 
+                                    Const_prom_stats_org_comp_data("Pflu",
+                                                                   "Pflu",
+                                                                   4,
+                                                                   5,
+                                                                   4)
+                                    )
+
+organism_comparison <- rbind(organism_comparison, 
+                                    Const_prom_stats_org_comp_data("Gpo1",
+                                                                   "Ppu",
+                                                                   3,
+                                                                   5,
+                                                                   4)
+                                    )
+organism_comparison <- rbind(organism_comparison, 
+                                    Const_prom_stats_org_comp_data("CGA009",
+                                                                   "Rpal",
+                                                                   2,
+                                                                   5,
+                                                                   4)
+                                    )
+
+## generate dataframe with promoter strength data that is seperated by both 
+## barcode and organism. Barcodes that were outliers are either included 
+## (PS_org_and_bc_w_out) or excluded (PS_org_and_bc)
+PS_org_and_bc_w_out <- organism_comparison
+
+PS_org_and_bc_w_out <- subset(PS_org_and_bc_w_out, select = c("Name",
+                                                        "organism",
+                                                        "Overall_PS",
+                                                        "Replicate",
+                                                        "BC_Promoter_Strength",
+                                                        "bc_outlier",
+                                                        "consistent",
+                                                        "Overall_PS_BC"))
+PS_org_and_bc <- PS_org_and_bc_w_out %>% 
+  filter(PS_org_and_bc_w_out$bc_outlier == "No" )
+
+## remove duplicated rows
+PS_org_and_bc_w_out <- unique(PS_org_and_bc_w_out)
+PS_org_and_bc <- unique(PS_org_and_bc)
+PS_org_and_bc_consistent <-PS_org_and_bc %>%
+  filter(PS_org_and_bc$consistent == "(1) yes")
+
+## Generate an array containing the distinct organisms used in the experiment.
+## This will be used to filter a data frame into subsets of the data containing
+## only the data for that condition
+  organism_array <- unique(subset(PS_org_and_bc_w_out, 
+                                   select = c("organism")
+                                   )
+                            )
+
+## generate dataframe with promoter strength data that is seperated just by 
+## organism (all barcodes compressed)
+  
+write_csv(organism_comparison,
+          "./Promoter_stats/all_organism_stats.csv")
+
+```
+
+```{r all_by_all_organism_comparisons_chart1, include = FALSE}
+
+
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
+## Generate a scatter plot comparing performance of individual promoters across
+## each organism. Dots are mean Promoter_Strength for a given organism, and are
+## colored according to organism. A regression line will be generated for each
+## organism to highlight both the general trend in promoter strengths across
+## organism. The steepness of the regression line slope will also serve as an
+## indicator of the dynamic range of promoter performance in a given organism.
+## Generally, a shallow slope (sub 1) means there is less difference in promoter
+## strength from strongest to weakest promoter for the x-axis condition than for
+## the y-axis condition. The converse is true for a >1 slope. If all slopes are
+## close to 1, it will suggest that the relative performance of the promoters
+## in the library are fairly similar between organisms. 
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
+
+
+## Generate a subset of the PS_org_and_bc that pulls out the first
+## organism in the array. Doing this allows us to set it as the X-axis in 
+## promoter comparison charts
+
+  d_org_1 <- subset(PS_org_and_bc_consistent, 
+                     organism == organism_array$organism[1], 
+                     select = c("Name",
+                                "organism",
+                                "Overall_PS",
+                                "Overall_PS_BC"))
+    
+## These generate a distinct label for the promoter strength and standard error
+## for the organism excised in the previous line of code. Together these 
+## lines allow us to keep the data for this organism as a distinct variable
+## when we recombine all of the organism data into a single reformatted
+## dataframe below
+  org_overall_PS_lbl = paste(organism_array$organism[1], 
+                             "_Overall_PS", 
+                             sep="")
+  
+  org_BC_PS_label = paste(organism_array$organism[1],  
+                          "_BC_PS", 
+                          sep="")
+  
+  org_overall_PS_BC_lbl = paste(organism_array$organism[1], 
+                                "_Overall_PS_BC", 
+                                sep="")
+  
+  
+  colnames(d_org_1)<-c("Name",
+                       "organism", 
+                       org_overall_PS_lbl, 
+                       org_overall_PS_BC_lbl)
+
+## Generate a subset of the PS_org_and_bc that pulls out the all condition
+## condition in the array that is not in the first condition in the array. 
+  d_org_others <- subset(PS_org_and_bc_consistent, 
+                         organism != organism_array$organism[1], 
+                         select = c("Name",
+                                    "organism",
+                                    "Overall_PS",
+                                    "Overall_PS_BC"))
+
+## These generate a distinct label for the promoter strength and standard error
+## for the organisms excised in the previous line of code. Together these three
+## lines allow us to keep the data for this organisms as a distinct variable
+## when we recombine all of the organism data into a single reformatted
+## dataframe below  
+  org_overall_PS_lbl2 = paste("not_",
+                            organism_array$organism[1], 
+                            "_Overall_PS", 
+                            sep="")
+  
+  org_BC_PS_label2 = paste("not_",
+                          organism_array$organism[1],  
+                          "_BC_PS", 
+                          sep="")
+  
+  org_overall_PS_BC_lbl2 = paste("not",
+                                organism_array$organism[1], 
+                                "_Overall_PS_BC", 
+                                 sep="")
+  
+  colnames(d_org_others)<-c("Name",
+                            "organism", 
+                            org_overall_PS_lbl2, 
+                            org_overall_PS_BC_lbl2)
+
+
+## merge the dataframes generated above. Merging these two allows us to use the
+## single dataframe for charting promoter strengths for one organism on x-axis
+## and promoter strengths for the other orgqnisms on the y-axis with different
+## colored markers for each organism
+  d_org_comp <- merge(d_org_1, d_org_others, by = "Name")
+
+
+print_me <-  generate_org_compare_charts_1 (d_org_comp,
+                                          organism_array$organism[1],
+                                          "all others")
+
+
+```
+
+```{r pair_wise_organism_comparison_charts1, include = FALSE}
+
+## Generate charts as in the previous chunk, but instead of a single chart with
+## all organisms, generate a collection of all pair-wise comparisons between 
+## organisms
+
+valX <- 1
+valY <- 1
+while(valX <= nrow(organism_array)){
+  while (valY <= nrow(organism_array)) {
+    if(valX != valY){
+    ## Generate a subset of the PS_org_and_bc that pulls out the organisms valX
+    ## and valY in the array. Doing this allows us to set them as the X-axis and
+    ## Y-axis in promoter comparison charts
+    d_orgX <- subset(PS_org_and_bc, 
+                     organism == organism_array$organism[valX], 
+                     select = c("Name",
+                                "organism",
+                                "Overall_PS",
+                                "Overall_PS_BC"))
+    
+    d_orgY <- subset(PS_org_and_bc, 
+                     organism == organism_array$organism[valY], 
+                     select = c("Name",
+                                "organism",
+                                "Overall_PS",
+                                "Overall_PS_BC"))
+    ## These generate a distinct label for the promoter strength and standard
+    ## error for the organism excised in the previous line of code. Together
+    ## these lines allow us to keep the data for this organism as a distinct
+    ## variable when we recombine all of the organism data into a single
+    ## reformatted dataframe below
+    X_PS_lbl = paste(organism_array$organism[valX], "_Overall_PS", sep="")
+    X_PS_BC_lbl = paste(organism_array$organism[valY], "_Overall_PS_BC", sep="")
+    colnames(d_orgX)<-c("Name", "organism", X_PS_lbl, X_PS_BC_lbl)
+    
+    Y_PS_lbl = paste(organism_array$organism[valY], "_Overall_PS", sep="")
+    Y_PS_BC_lbl = paste(organism_array$organism[valY], "_Overall_PS_BC", sep="")
+    colnames(d_orgY)<-c("Name", "organism", Y_PS_lbl, Y_PS_BC_lbl)
+
+    ## merge the dataframes generated above. Merging these two allows us to use
+    ## the single dataframe for charting promoter strengths for one organism on
+    ## x-axis and promoter strengths for the other orgqnisms on the y-axis with
+    ## different colored markers for each organism
+    d_org_XY <- merge(d_orgX, d_orgY, by = "Name")
+    print_me <- generate_org_compare_charts_1 (d_org_XY,
+                                             organism_array$organism[valX],
+                                             organism_array$organism[valY],
+                                             )
+    plot(print_me, width = 5, height = 4)
+    }
+    valY <- (valY + 1)
+  } 
+  valY <- 1
+  valX <- (valX + 1)
+}
+
+```
+
+```{r consistent_pair_wise_organism_comparison_charts1, include = FALSE}
+
+## Generate charts as in the previous chunk, but instead of a single chart with
+## all organisms, generate a collection of all pair-wise comparisons between 
+## organisms
+
+valX <- 1
+valY <- 1
+while(valX <= nrow(organism_array)){
+  while (valY <= nrow(organism_array)) {
+    if(valX != valY){
+    ## Generate a subset of the PS_org_and_bc that pulls out the organisms valX
+    ## and valY in the array. Doing this allows us to set them as the X-axis and
+    ## Y-axis in promoter comparison charts
+    d_orgX <- subset(PS_org_and_bc_consistent, 
+                     organism == organism_array$organism[valX], 
+                     select = c("Name",
+                                "organism",
+                                "Overall_PS",
+                                "Overall_PS_BC"))
+    
+    d_orgY <- subset(PS_org_and_bc_consistent, 
+                     organism == organism_array$organism[valY], 
+                     select = c("Name",
+                                "organism",
+                                "Overall_PS",
+                                "Overall_PS_BC"))
+    ## These generate a distinct label for the promoter strength and standard
+    ## error for the organism excised in the previous line of code. Together
+    ## these lines allow us to keep the data for this organism as a distinct
+    ## variable when we recombine all of the organism data into a single
+    ## reformatted dataframe below
+    X_PS_lbl = paste(organism_array$organism[valX], "_Overall_PS", sep="")
+    X_PS_BC_lbl = paste(organism_array$organism[valY], "_Overall_PS_BC", sep="")
+    colnames(d_orgX)<-c("Name", "organism", X_PS_lbl, X_PS_BC_lbl)
+    
+    Y_PS_lbl = paste(organism_array$organism[valY], "_Overall_PS", sep="")
+    Y_PS_BC_lbl = paste(organism_array$organism[valY], "_Overall_PS_BC", sep="")
+    colnames(d_orgY)<-c("Name", "organism", Y_PS_lbl, Y_PS_BC_lbl)
+
+    ## merge the dataframes generated above. Merging these two allows us to use
+    ## the single dataframe for charting promoter strengths for one organism on
+    ## x-axis and promoter strengths for the other orgqnisms on the y-axis with
+    ## different colored markers for each organism
+    d_org_XY <- merge(d_orgX, d_orgY, by = "Name")
+    print_me <- generate_org_compare_charts_1 (d_org_XY,
+                                             organism_array$organism[valX],
+                                             organism_array$organism[valY],
+                                             )
+    plot(print_me, width = 5, height = 4)
+    }
+    valY <- (valY + 1)
+  } 
+  valY <- 1
+  valX <- (valX + 1)
+}
+
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent 
+printing of the R code that generated the plot.
