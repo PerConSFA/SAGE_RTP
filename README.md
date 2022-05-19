@@ -7,7 +7,7 @@ Once barcode counts and normalized expression levels were generated, we generate
 ### Workflow
 
 * Run Pre-processing.ipynb script
-** Requires path to 01_DRAFTS_process_raw.sh
-** Required bbmap installation (prerequisite for DRAFTS)
-** Outputs Paired sequence data
+  * Requires path to 01_DRAFTS_process_raw.sh
+  * Required bbmap installation (prerequisite for DRAFTS)
+  * Outputs Paired sequence data
 * Run 
