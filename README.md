@@ -5,8 +5,11 @@ Once barcode counts and normalized expression levels were generated, we generate
 
 ### Workflow
 
-* Run Pre-processing.ipynb script
+* Run Pre-processing.ipynb notebook to create folder structure compatible with DRAFTS scripts
+  * Requires 'home_dir' path to Illumina DNA/RNA barcode reads
   * Requires path to 01_DRAFTS_process_raw.sh
   * Required bbmap installation (prerequisite for DRAFTS)
   * Outputs Paired sequence data
-* Run 
+* Run run_DRAFTS_DNA_v2.py to count DNA barcodes
+* Run run_DRAFTS_RNA_v2.py to count RNA barcodes
+* Run Build_tx_read_dataframe.ipynb notebook to calculate promoter-specific relative transcriptional activity (rta)
