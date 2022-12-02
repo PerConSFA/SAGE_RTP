@@ -14,3 +14,7 @@ Once barcode counts and normalized expression levels were generated, we generate
 * Run run_DRAFTS_DNA_v2.py to count DNA barcodes
 * Run run_DRAFTS_RNA_v2.py to count RNA barcodes
 * Run Build_tx_read_dataframe.ipynb notebook to calculate promoter-specific relative transcriptional activity (rta)
+
+
+### Citing SAGE-RTP
+Robert G. Egbert, & Joshua R. Elmore. (2022). Serine Recombinase-Assisted Genome Engineering - Relative Transcriptional Profiling (SAGE-RTP) Toolkit (1.0). Zenodo. https://doi.org/10.5281/zenodo.7388406
