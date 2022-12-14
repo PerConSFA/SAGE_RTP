@@ -1,5 +1,5 @@
 # **S**erine-recombinase **A**ssisted **G**enome **E**ngineering - Relative Transcriptional Profiling (SAGE-RTP) Toolkit
-# [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7388406.svg)](https://zenodo.org/badge/latestdoi/7388406)
+# [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7388406.svg)](https://doi.org/10.5281/zenodo.7388405)
 The SAGE-RTP toolkit leverages source code from previously reported DNA regulatory element analysis package [DRAFTS](https://doi.org/10.15252/msb.20198875), providing new modification features adapted to accept nucleotide sequences and Illumina read length differences, for data process workflows utilizing DNA and RNA barcode counts for statistical analysis of sequence promoter expression levels with data visualizations.
 
 
