@@ -16,4 +16,5 @@ The SAGE-RTP toolkit leverages source code from previously reported DNA regulato
 
 
 ### Citing SAGE-RTP
-Robert G. Egbert, & Joshua R. Elmore. (2022). Serine Recombinase-Assisted Genome Engineering - Relative Transcriptional Profiling (SAGE-RTP) Toolkit (1.0). Zenodo. https://doi.org/10.5281/zenodo.7388406
+1. Robert G. Egbert, & Joshua R. Elmore. (2022). Serine Recombinase-Assisted Genome Engineering - Relative Transcriptional Profiling (SAGE-RTP) Toolkit (1.0). Zenodo. https://doi.org/10.5281/zenodo.7388406
+2. Elmore JR, Dexter GN, Baldino H, Huenemann JD, Francis R, Peabody GL 5th, Martinez-Baird J, Riley LA, Simmons T, Coleman-Derr D, Guss AM, Egbert RG. High-throughput genetic engineering of nonmodel and undomesticated bacteria via iterative site-specific genome integration. Sci Adv. 2023 Mar 10;9(10):eade1285. doi: [10.1126/sciadv.ade1285](https://doi.org/10.1126/sciadv.ade1285). Epub 2023 Mar 10. PMID:[36897939](https://pubmed.ncbi.nlm.nih.gov/36897939/); PMCID:[PMC10005180](http://www.ncbi.nlm.nih.gov/pmc/articles/pmc10005180/).
